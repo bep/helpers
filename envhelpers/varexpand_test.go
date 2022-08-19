@@ -21,4 +21,7 @@ func TestExpand(t *testing.T) {
 	c.Assert(Expand("with special char: ${myvar&}.", m), qt.Equals, "with special char: ${myvar&}.")
 	c.Assert(Expand("not without brackets: $myvar", m), qt.Equals, "not without brackets: $myvar")
 	c.Assert(Expand("multiline: ${first}\n\nanother: ${second}", m), qt.Equals, "multiline: first-expanded\n\nanother: second-expanded")
+
+	c.Assert(Expand("unquoute single: '${myvar@U}'.", m), qt.Equals, "unquoute single: myvar-expanded.")
+	c.Assert(Expand("unquoute double: \"${myvar@U}\".", m), qt.Equals, "unquoute double: myvar-expanded.")
 }
