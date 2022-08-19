@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -11,6 +12,10 @@ import (
 )
 
 func TestCopyFile(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping on windows")
+	}
+
 	tempDir := t.TempDir()
 	abs := func(s string) string {
 		return filepath.Join(tempDir, s)
@@ -28,6 +33,9 @@ func TestCopyFile(t *testing.T) {
 }
 
 func TestCopyDir(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping on windows")
+	}
 	tempDir := t.TempDir()
 	abs := func(s string) string {
 		return filepath.Join(tempDir, s)
