@@ -24,9 +24,8 @@ func CopyFile(from, to string) error {
 		return err
 	}
 	si, err := os.Stat(from)
-	if err != nil {
+	if err == nil {
 		err = os.Chmod(to, si.Mode())
-
 		if err != nil {
 			return err
 		}

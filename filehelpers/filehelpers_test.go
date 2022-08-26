@@ -22,7 +22,7 @@ func TestCopyFile(t *testing.T) {
 	}
 
 	c := qt.New(t)
-	_, err := os.Create(abs("f1.txt"))
+	_, err := os.OpenFile(abs("f1.txt"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0700)
 	c.Assert(err, qt.IsNil)
 	c.Assert(CopyFile(abs("f1.txt"), abs("f2.txt")), qt.IsNil)
 	fi1, err := os.Stat(abs("f1.txt"))
@@ -30,6 +30,10 @@ func TestCopyFile(t *testing.T) {
 	fi2, err := os.Stat(abs("f2.txt"))
 	c.Assert(err, qt.IsNil)
 	c.Assert(fi1.Mode(), qt.Equals, fi2.Mode())
+
+	// Error cases.
+	c.Assert(CopyFile(abs("doesnotexist.txt"), abs("f2.txt")), qt.IsNotNil)
+	c.Assert(CopyFile(abs("f1.txt"), abs("doesnotexist/f2.txt")), qt.IsNotNil)
 }
 
 func TestCopyDir(t *testing.T) {
@@ -62,4 +66,11 @@ func TestCopyDir(t *testing.T) {
 	rdir2, _ := os.ReadDir(abs("b/b/c"))
 	c.Assert(len(rdir2), qt.Equals, 2)
 
+	c.Assert(CopyDir(abs("a"), abs("b"), nil), qt.IsNil)
+	rdir2, _ = os.ReadDir(abs("b/b/c"))
+	c.Assert(len(rdir2), qt.Equals, 3)
+
+	// Error cases.
+	c.Assert(CopyDir(abs("doesnotexist"), abs("b"), nil), qt.IsNotNil)
+	c.Assert(CopyDir(abs("a/b/c/f3.txt"), abs("b"), nil), qt.IsNotNil)
 }
