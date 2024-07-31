@@ -33,9 +33,9 @@ func TestArchive(t *testing.T) {
 
 		sourceDir := t.TempDir()
 		subDir := filepath.Join(sourceDir, "subdir")
-		c.Assert(os.MkdirAll(subDir, 0755), qt.IsNil)
-		c.Assert(os.WriteFile(filepath.Join(sourceDir, "file1.txt"), []byte("hello"), 0644), qt.IsNil)
-		c.Assert(os.WriteFile(filepath.Join(subDir, "file2.txt"), []byte("world"), 0643), qt.IsNil)
+		c.Assert(os.MkdirAll(subDir, 0o755), qt.IsNil)
+		c.Assert(os.WriteFile(filepath.Join(sourceDir, "file1.txt"), []byte("hello"), 0o644), qt.IsNil)
+		c.Assert(os.WriteFile(filepath.Join(subDir, "file2.txt"), []byte("world"), 0o643), qt.IsNil)
 
 		matchAll := func(string) bool { return true }
 		c.Assert(a.ArchiveDirectory(sourceDir, matchAll, f), qt.IsNil)

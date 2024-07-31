@@ -22,7 +22,7 @@ func TestCopyFile(t *testing.T) {
 	}
 
 	c := qt.New(t)
-	_, err := os.OpenFile(abs("f1.txt"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0700)
+	_, err := os.OpenFile(abs("f1.txt"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o700)
 	c.Assert(err, qt.IsNil)
 	c.Assert(CopyFile(abs("f1.txt"), abs("f2.txt")), qt.IsNil)
 	fi1, err := os.Stat(abs("f1.txt"))
@@ -45,7 +45,7 @@ func TestCopyDir(t *testing.T) {
 		return filepath.Join(tempDir, s)
 	}
 	c := qt.New(t)
-	c.Assert(os.MkdirAll(abs("a/b/c"), 0755), qt.IsNil)
+	c.Assert(os.MkdirAll(abs("a/b/c"), 0o755), qt.IsNil)
 	_, err := os.Create(abs("a/b/c/f1.txt"))
 	c.Assert(err, qt.IsNil)
 	_, err = os.Create(abs("a/b/c/f2.txt"))

@@ -94,7 +94,6 @@ func (a *archivist) ArchiveDirectory(directory string, predicate func(string) bo
 	})
 
 	return
-
 }
 
 type tarGzArchiver struct {
@@ -141,8 +140,7 @@ func (a *tarGzArchiver) Close() error {
 	return a.out.Close()
 }
 
-type tarGzExtractor struct {
-}
+type tarGzExtractor struct{}
 
 func (e *tarGzExtractor) NewArchiveAdder(out io.WriteCloser) archiveAdder {
 	a := &tarGzArchiver{
@@ -191,7 +189,7 @@ func (a *tarGzExtractor) Extract(in io.ReadCloser, targetDir string) error {
 				return err
 			}
 		case tar.TypeReg:
-			if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil && !os.IsExist(err) {
+			if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil && !os.IsExist(err) {
 				return err
 			}
 			f, err := os.OpenFile(target, os.O_CREATE|os.O_RDWR, os.FileMode(header.Mode))
