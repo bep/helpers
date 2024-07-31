@@ -45,7 +45,7 @@ func CopyDir(from, to string, filter func(filename string) bool) error {
 		return fmt.Errorf("%q is not a directory", from)
 	}
 
-	err = os.MkdirAll(to, 0777) // before umask
+	err = os.MkdirAll(to, 0o777) // before umask
 	if err != nil {
 		return err
 	}

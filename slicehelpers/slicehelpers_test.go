@@ -62,5 +62,4 @@ func TestChunk(t *testing.T) {
 			{"x", "y", "z"},
 		},
 	)
-
 }
