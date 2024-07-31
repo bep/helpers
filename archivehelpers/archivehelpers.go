@@ -40,11 +40,13 @@ type Archiver interface {
 	ArchiveDirectory(directory string, predicate func(string) bool, out io.WriteCloser) error
 }
 
+// Extracter is an interface for extracting archives.
 type Extracter interface {
 	// Extract extracts the given archive into the given directory.
 	Extract(in io.ReadCloser, targetDir string) error
 }
 
+// Type represents an archive type.
 type Type int
 
 func (t Type) String() string {
@@ -165,7 +167,7 @@ func (e *tarGzExtractor) NewArchiveAdder(out io.WriteCloser) archiveAdder {
 	}
 }
 
-func (a *tarGzExtractor) Extract(in io.ReadCloser, targetDir string) error {
+func (e *tarGzExtractor) Extract(in io.ReadCloser, targetDir string) error {
 	defer in.Close()
 
 	gzr, err := gzip.NewReader(in)
