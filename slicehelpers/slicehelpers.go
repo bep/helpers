@@ -24,3 +24,22 @@ func Chunk[T any](s []T, n int) [][]T {
 	}
 	return partitions
 }
+
+// Parition partitions s into slices of size size.
+func Partition[T any](s []T, size int) [][]T {
+	if len(s) == 0 {
+		return nil
+	}
+	if size <= 0 {
+		return nil
+	}
+	var partitions [][]T
+	for i := 0; i < len(s); i += size {
+		end := i + size
+		if end > len(s) {
+			end = len(s)
+		}
+		partitions = append(partitions, s[i:end])
+	}
+	return partitions
+}

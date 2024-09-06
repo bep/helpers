@@ -66,3 +66,72 @@ func TestChunk(t *testing.T) {
 		},
 	)
 }
+
+func TestPartition(t *testing.T) {
+	c := qt.New(t)
+
+	c.Assert(
+		Partition([]int{1, 2, 3, 4, 5}, 2),
+		qt.DeepEquals,
+		[][]int{
+			{1, 2},
+			{3, 4},
+			{5},
+		},
+	)
+
+	c.Assert(
+		Partition([]int{1, 2, 3, 4, 5}, 3),
+		qt.DeepEquals,
+		[][]int{
+			{1, 2, 3},
+			{4, 5},
+		},
+	)
+
+	c.Assert(
+		Partition([]int{1, 2, 3, 4, 5}, 1),
+		qt.DeepEquals,
+		[][]int{
+			{1},
+			{2},
+			{3},
+			{4},
+			{5},
+		},
+	)
+
+	c.Assert(
+		Partition([]int{1, 2, 3, 4, 5}, 5),
+		qt.DeepEquals,
+		[][]int{
+			{1, 2, 3, 4, 5},
+		},
+	)
+
+	c.Assert(
+		Partition([]int{1, 2, 3, 4, 5}, 6),
+		qt.DeepEquals,
+		[][]int{
+			{1, 2, 3, 4, 5},
+		},
+	)
+
+	c.Assert(
+		Partition([]int{1, 2, 3, 4, 5}, 7),
+		qt.DeepEquals,
+		[][]int{
+			{1, 2, 3, 4, 5},
+		},
+	)
+
+	c.Assert(
+		Partition([]int{1, 2, 3, 4, 5}, 0),
+		qt.IsNil,
+	)
+
+	c.Assert(
+		Partition([]int{}, 2),
+		qt.IsNil,
+	)
+}
