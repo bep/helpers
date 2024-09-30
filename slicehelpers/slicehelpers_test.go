@@ -4,6 +4,7 @@
 package slicehelpers
 
 import (
+	"sync"
 	"testing"
 
 	qt "github.com/frankban/quicktest"
@@ -134,4 +135,67 @@ func TestPartition(t *testing.T) {
 		Partition([]int{}, 2),
 		qt.IsNil,
 	)
+}
+
+func TestStack(t *testing.T) {
+	c := qt.New(t)
+
+	s := NewStack[int](StackConfig{})
+
+	c.Assert(s.Peek(), qt.Equals, 0)
+	c.Assert(s.Pop(), qt.Equals, 0)
+	s.Push(1)
+	c.Assert(s.Peek(), qt.Equals, 1)
+	c.Assert(s.Pop(), qt.Equals, 1)
+	c.Assert(s.Pop(), qt.Equals, 0)
+	c.Assert(s.Peek(), qt.Equals, 0)
+
+	s.Push(2)
+	s.Push(3)
+	c.Assert(s.Len(), qt.Equals, 2)
+	c.Assert(s.Peek(), qt.Equals, 3)
+	c.Assert(s.Pop(), qt.Equals, 3)
+	c.Assert(s.Pop(), qt.Equals, 2)
+	c.Assert(s.Pop(), qt.Equals, 0)
+	c.Assert(s.Peek(), qt.Equals, 0)
+
+	s.Push(4)
+	s.Push(5)
+	c.Assert(s.Drain(), qt.DeepEquals, []int{4, 5})
+	c.Assert(s.Len(), qt.Equals, 0)
+}
+
+func TestStackThreadSafe(t *testing.T) {
+	s := NewStack[int](StackConfig{ThreadSafe: true})
+
+	var wg sync.WaitGroup
+
+	for k := 0; k < 20; k++ {
+		wg.Add(3)
+		go func() {
+			defer wg.Done()
+			for i := 0; i < 100; i++ {
+				s.Push(i)
+				s.Len()
+				s.Peek()
+			}
+		}()
+
+		go func() {
+			defer wg.Done()
+			for i := 0; i < 50; i++ {
+				s.Pop()
+			}
+		}()
+
+		go func() {
+			defer wg.Done()
+			for i := 0; i < 50; i++ {
+				s.Drain()
+			}
+		}()
+
+	}
+
+	wg.Wait()
 }
