@@ -26,6 +26,6 @@ func TestContextDispatcher(t *testing.T) {
 	c.Assert(value, qt.Equals, "testValue")
 	_, found = dispatcher1.Lookup(context.Background())
 	c.Assert(found, qt.IsFalse)
-	value, found = dispatcher2.Lookup(ctx)
+	_, found = dispatcher2.Lookup(ctx)
 	c.Assert(found, qt.IsFalse)
 }

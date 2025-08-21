@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
           go-version: ${{ matrix.go-version }}
       - name: Install staticcheck
@@ -25,7 +25,7 @@ jobs:
         run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
         shell: bash
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Fmt
         if: matrix.platform != 'windows-latest' # :(
         run: "diff <(gofmt -d .) <(printf '')"
@@ -39,6 +39,6 @@ jobs:
       - name: Test
         run: go test -race ./... -coverpkg=./... -coverprofile=coverage.txt -covermode=atomic
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.5.0
+        uses: codecov/codecov-action@8f6ec407a34d5ec2b33d7d8f7f50279493b5efb4 # v5.5.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
