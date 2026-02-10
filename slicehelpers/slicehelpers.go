@@ -37,10 +37,7 @@ func Partition[T any](s []T, size int) [][]T {
 	}
 	var partitions [][]T
 	for i := 0; i < len(s); i += size {
-		end := i + size
-		if end > len(s) {
-			end = len(s)
-		}
+		end := min(i+size, len(s))
 		partitions = append(partitions, s[i:end])
 	}
 	return partitions
