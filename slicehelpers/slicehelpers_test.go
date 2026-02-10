@@ -170,11 +170,11 @@ func TestStackThreadSafe(t *testing.T) {
 
 	var wg sync.WaitGroup
 
-	for k := 0; k < 20; k++ {
+	for range 20 {
 		wg.Add(3)
 		go func() {
 			defer wg.Done()
-			for i := 0; i < 100; i++ {
+			for i := range 100 {
 				s.Push(i)
 				s.Len()
 				s.Peek()
@@ -183,14 +183,14 @@ func TestStackThreadSafe(t *testing.T) {
 
 		go func() {
 			defer wg.Done()
-			for i := 0; i < 50; i++ {
+			for range 50 {
 				s.Pop()
 			}
 		}()
 
 		go func() {
 			defer wg.Done()
-			for i := 0; i < 50; i++ {
+			for range 50 {
 				s.Drain()
 			}
 		}()
