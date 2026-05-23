@@ -130,3 +130,83 @@ func (m *ConcurrentMap[K, T]) Len() int {
 	defer m.mu.RUnlock()
 	return len(m.m)
 }
+
+// ConcurrentSet is a thread safe set backed by a Go map
+// protected by a RWMutex.
+type ConcurrentSet[K comparable] struct {
+	mu sync.RWMutex
+	m  map[K]struct{}
+}
+
+// NewConcurrentSet creates a new ConcurrentSet.
+func NewConcurrentSet[K comparable]() *ConcurrentSet[K] {
+	return &ConcurrentSet[K]{
+		m: make(map[K]struct{}),
+	}
+}
+
+// Has checks if the given key is in the set.
+func (s *ConcurrentSet[K]) Has(key K) bool {
+	s.mu.RLock()
+	_, found := s.m[key]
+	s.mu.RUnlock()
+	return found
+}
+
+// Add adds the given key to the set.
+func (s *ConcurrentSet[K]) Add(key K) {
+	s.mu.Lock()
+	s.m[key] = struct{}{}
+	s.mu.Unlock()
+}
+
+// AddIfAbsent adds the given key to the set if it is not already present.
+// It returns true if the key was added, false if the key was already present.
+func (s *ConcurrentSet[K]) AddIfAbsent(key K) bool {
+	s.mu.RLock()
+	if _, found := s.m[key]; found {
+		s.mu.RUnlock()
+		return false
+	}
+	s.mu.RUnlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if _, found := s.m[key]; found {
+		return false
+	}
+	s.m[key] = struct{}{}
+	return true
+}
+
+// Delete deletes the given key from the set.
+// It returns true if the key was found and deleted, false otherwise.
+func (s *ConcurrentSet[K]) Delete(key K) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if _, found := s.m[key]; found {
+		delete(s.m, key)
+		return true
+	}
+	return false
+}
+
+// All returns an iterator over all keys in the set.
+// A read lock is held during the iteration.
+func (s *ConcurrentSet[K]) All() iter.Seq[K] {
+	return func(yield func(K) bool) {
+		s.mu.RLock()
+		defer s.mu.RUnlock()
+		for k := range s.m {
+			if !yield(k) {
+				return
+			}
+		}
+	}
+}
+
+// Len returns the number of keys in the set.
+func (s *ConcurrentSet[K]) Len() int {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return len(s.m)
+}
