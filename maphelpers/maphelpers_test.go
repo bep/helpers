@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"slices"
 	"sync"
 	"testing"
 
@@ -140,6 +141,73 @@ func TestConcurrentMapConcurrency(t *testing.T) {
 			m.GetOrCreate(fmt.Sprintf("shared%d", i), func() (int, error) {
 				return i, nil
 			})
+		})
+	}
+
+	// Concurrent Delete.
+	for i := range n {
+		wg.Go(func() {
+			m.Delete(fmt.Sprintf("key%d", i))
+		})
+	}
+
+	wg.Wait()
+}
+
+func TestConcurrentSet(t *testing.T) {
+	c := qt.New(t)
+
+	m := NewConcurrentSet[string]()
+	m.Add("a")
+	m.Add("b")
+	m.Add("c")
+
+	c.Assert(m.Has("a"), qt.Equals, true)
+	c.Assert(m.Has("b"), qt.Equals, true)
+	c.Assert(m.Has("c"), qt.Equals, true)
+	c.Assert(m.Has("d"), qt.Equals, false)
+
+	c.Assert(m.Delete("b"), qt.Equals, true)
+	c.Assert(m.Delete("foo"), qt.Equals, false)
+	c.Assert(m.Has("b"), qt.Equals, false)
+
+	c.Assert(m.AddIfAbsent("e"), qt.Equals, true)
+	c.Assert(m.AddIfAbsent("e"), qt.Equals, false)
+	c.Assert(m.Has("e"), qt.Equals, true)
+
+	m.Add("b")
+	c.Assert(m.Has("b"), qt.Equals, true)
+
+	c.Assert(m.Len(), qt.Equals, 4)
+
+	keys := slices.Collect(m.All())
+	slices.Sort(keys)
+	c.Assert(keys, qt.DeepEquals, []string{"a", "b", "c", "e"})
+}
+
+func TestConcurrentSetConcurrency(t *testing.T) {
+	m := NewConcurrentSet[string]()
+	var wg sync.WaitGroup
+	n := 100
+
+	// Concurrent adds.
+	for i := range n {
+		wg.Go(func() {
+			m.Add(fmt.Sprintf("key%d", i))
+		})
+	}
+
+	// Concurrent Has.
+	for i := range n {
+		wg.Go(func() {
+			m.Has(fmt.Sprintf("key%d", i))
+		})
+	}
+
+	// Concurrent AddIfAbsent.
+	for i := range n {
+		wg.Go(func() {
+			m.AddIfAbsent(fmt.Sprintf("shared%d", i))
 		})
 	}
 
