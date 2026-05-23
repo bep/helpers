@@ -110,6 +110,8 @@ func TestConcurrentMap(t *testing.T) {
 		break
 	}
 	c.Assert(count, qt.Equals, 1)
+
+	c.Assert(all.Len(), qt.Equals, 3)
 }
 
 func TestConcurrentMapConcurrency(t *testing.T) {

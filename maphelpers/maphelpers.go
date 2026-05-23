@@ -123,3 +123,10 @@ func (m *ConcurrentMap[K, T]) All() iter.Seq2[K, T] {
 		}
 	}
 }
+
+// Len returns the number of key/value pairs in the map.
+func (m *ConcurrentMap[K, T]) Len() int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return len(m.m)
+}
