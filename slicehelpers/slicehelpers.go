@@ -49,6 +49,7 @@ type stack[T any] struct {
 	items []T
 }
 
+// StackConfig holds the configuration for a Stack.
 type StackConfig struct {
 	// ThreadSafe indicates if the stack should be thread safe.
 	ThreadSafe bool
@@ -98,6 +99,7 @@ func (s *stack[T]) Len() int {
 	return len(s.items)
 }
 
+// Stack is a stack data structure.
 type Stack[T any] interface {
 	// Push adds an element to the stack.
 	Push(v T)
