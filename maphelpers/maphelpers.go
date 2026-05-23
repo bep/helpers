@@ -76,6 +76,14 @@ func (m *ConcurrentMap[K, T]) Delete(key K) bool {
 	return false
 }
 
+// WithReadLock executes the given function with a read lock on the map.
+// Note that the map m should only be accessed within the function f.
+func (m *ConcurrentMap[K, T]) WithReadLock(f func(m map[K]T) error) error {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return f(m.m)
+}
+
 // WithWriteLock executes the given function with a write lock on the map.
 // Note that the map m should only be accessed within the function f.
 func (m *ConcurrentMap[K, T]) WithWriteLock(f func(m map[K]T) error) error {

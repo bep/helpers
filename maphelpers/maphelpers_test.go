@@ -44,6 +44,13 @@ func TestConcurrentMap(t *testing.T) {
 	c.Assert(err, qt.IsNil)
 	c.Assert(v, qt.Equals, 100)
 
+	m.WithReadLock(func(m map[string]int) error {
+		v, found := m["b"]
+		c.Assert(found, qt.Equals, true)
+		c.Assert(v, qt.Equals, 42)
+		return nil
+	})
+
 	m.WithWriteLock(func(m map[string]int) error {
 		m["f"] = 500
 		return nil
