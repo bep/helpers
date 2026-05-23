@@ -44,6 +44,17 @@ func TestConcurrentMap(t *testing.T) {
 	c.Assert(err, qt.IsNil)
 	c.Assert(v, qt.Equals, 100)
 
+	set := m.SetIfAbsent("d", 200)
+	c.Assert(set, qt.Equals, false)
+	v, found = m.Lookup("d")
+	c.Assert(found, qt.Equals, true)
+	c.Assert(v, qt.Equals, 100)
+	set = m.SetIfAbsent("e", 300)
+	c.Assert(set, qt.Equals, true)
+	v, found = m.Lookup("e")
+	c.Assert(found, qt.Equals, true)
+	c.Assert(v, qt.Equals, 300)
+
 	m.WithReadLock(func(m map[string]int) error {
 		v, found := m["b"]
 		c.Assert(found, qt.Equals, true)

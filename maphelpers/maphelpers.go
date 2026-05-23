@@ -64,6 +64,24 @@ func (m *ConcurrentMap[K, T]) Set(key K, value T) {
 	m.mu.Unlock()
 }
 
+// SetIfAbsent sets the given key to the given value if the key is not already present in the map.
+// It returns true if the key was set, false if the key was already present.
+func (m *ConcurrentMap[K, T]) SetIfAbsent(key K, value T) bool {
+	m.mu.RLock()
+	if _, found := m.m[key]; found {
+		m.mu.RUnlock()
+		return false
+	}
+	m.mu.RUnlock()
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if _, found := m.m[key]; found {
+		return false
+	}
+	m.m[key] = value
+	return true
+}
+
 // Delete deletes the given key from the map.
 // It returns true if the key was found and deleted, false otherwise.
 func (m *ConcurrentMap[K, T]) Delete(key K) bool {
